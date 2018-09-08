@@ -1,0 +1,8 @@
+label main:
+    call read_int # put the result in D
+    assign_a_d
+    assign_b_const 1
+    add
+    assign_d_a
+    call write_int # write the integer stored in D
+    ret

@@ -1,0 +1,209 @@
+const sizeof_int 2
+const n_addr 0
+const i_addr 1
+const j_addr 2
+const arr_addr 3
+
+label writeln:
+    assign_a_const '\n'
+    comp_a
+    outb
+    ret
+
+label read_arr:
+    assign_a_d
+    jz !fin_1
+    comp_d
+    push
+    call read_int
+    assign_mem_d
+    assign_a_dp
+    assign_b_const $sizeof_int
+    add
+    assign_dp_a
+    pop
+    push
+    decomp_d
+    assign_a_d
+    assign_b_const 1
+    sub
+    assign_d_a
+    call read_arr
+    pop
+    decomp_d
+    assign_a_dp
+    assign_b_const $sizeof_int
+    sub
+    assign_dp_a
+label !fin_1:
+    ret
+
+label write_arr:
+    assign_a_d
+    jz !fin_2
+    comp_d
+    push
+    assign_d_mem
+    call write_int
+    assign_a_const ' '
+    comp_a
+    outb
+    assign_a_dp
+    assign_b_const $sizeof_int
+    add
+    assign_dp_a
+    pop
+    push
+    decomp_d
+    assign_a_d
+    assign_b_const 1
+    sub
+    assign_d_a
+    call write_arr
+    pop
+    decomp_d
+    assign_a_dp
+    assign_b_const $sizeof_int
+    sub
+    assign_dp_a
+label !fin_2:
+    ret
+
+label mul_dp_sizeof_int:
+    assign_a_dp
+    assign_b_const $sizeof_int
+    mul
+    assign_dp_a
+    ret
+
+label main:
+    # read(n);
+    assign_dp_const $n_addr
+    call mul_dp_sizeof_int
+    call read_int
+
+    # DX = n;
+    assign_mem_d
+    
+    # read_arr(arr);
+    assign_dp_const $arr_addr
+    call mul_dp_sizeof_int
+    call read_arr
+
+    # i = 0;
+    assign_dp_const $i_addr
+    call mul_dp_sizeof_int
+    assign_mem_const 0
+
+    # DX = n;
+    assign_dp_const $n_addr
+    call mul_dp_sizeof_int
+    assign_d_mem
+    
+label !while_lbl_3:
+    # AX = i - DX;
+    assign_dp_const $i_addr
+    call mul_dp_sizeof_int
+    assign_a_mem
+    assign_b_d
+    sub
+
+    # if AX < 0 then jmp !do_lbl_4 else jmp !end_lbl_3
+    jn !do_lbl_4
+    jmp !end_lbl_3
+
+label !do_lbl_4:
+    call bubble_sort_round
+
+    # i = i + 1;
+    assign_dp_const $i_addr
+    call mul_dp_sizeof_int
+    assign_a_mem
+    assign_b_const 1
+    add
+    assign_mem_a
+
+    jmp !while_lbl_3
+label !end_lbl_3:
+
+    assign_dp_const $arr_addr
+    call mul_dp_sizeof_int
+    call write_arr
+    call writeln
+    ret
+
+label bubble_sort_round:
+    # DX == n;
+    nop 
+    nop
+
+    # j = 0;
+    assign_dp_const $j_addr
+    call mul_dp_sizeof_int
+    assign_mem_const 0
+    
+label !while_lbl_5:
+    # AX = j - DX + 1;
+    assign_dp_const $j_addr
+    call mul_dp_sizeof_int
+    assign_a_mem
+    assign_b_d
+    sub
+    assign_b_const 1
+    add
+
+    # if AX < 0 then jmp !do_lbl_6 else jmp !end_lbl_5
+    jn !do_lbl_6
+    jmp !end_lbl_5
+
+label !do_lbl_6:
+    # BX = j;
+    assign_dp_const $j_addr
+    call mul_dp_sizeof_int
+    assign_b_mem
+
+    # AX = arr + BX;
+    assign_a_const $arr_addr
+    add
+
+    #DP = AX;
+    assign_dp_a
+    call mul_dp_sizeof_int
+
+    call swap_if_needed
+
+    assign_dp_const $j_addr
+    call mul_dp_sizeof_int
+    assign_a_mem
+    assign_b_const 1
+    add
+    assign_mem_a
+    jmp !while_lbl_5
+label !end_lbl_5:
+    ret
+
+label swap_if_needed:
+    assign_c_mem
+    assign_a_dp
+    assign_b_const $sizeof_int
+    add
+    assign_dp_a
+    assign_b_mem
+    assign_a_c
+    cmp_unsigned
+#    dump
+#    call writeln
+    jp !if_lbl_7
+    jmp !fi_lbl_7
+label !if_lbl_7:
+    comp_b
+    assign_b_c
+    decomp_c
+label !fi_lbl_7:
+    assign_mem_b
+    assign_a_dp
+    assign_b_const $sizeof_int
+    sub
+    assign_dp_a
+    assign_mem_c
+    ret

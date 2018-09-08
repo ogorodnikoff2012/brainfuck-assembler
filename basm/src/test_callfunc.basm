@@ -1,0 +1,15 @@
+label main:
+    assign_a_const 5
+    comp_a
+    push
+    call func
+    ret
+
+label func:
+    sp_move -2
+    pop
+    push
+    decomp_d
+    sp_move 2
+    call write_int
+    ret

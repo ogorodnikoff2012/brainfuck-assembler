@@ -1,0 +1,30 @@
+label main:
+    call read_int
+    call read_list
+    ret
+
+label read_list:
+    assign_a_d
+    jz !fin_1
+    comp_d
+    push
+    call read_int
+    pop
+    decomp_a
+    comp_d
+    push
+    # comp_a
+    # push
+    assign_b_const 1
+    sub
+    assign_d_a
+    call read_list
+    # pop
+    pop
+    decomp_d
+    call write_int
+    assign_d_const '\n'
+    comp_d
+    outb
+label !fin_1:
+    ret

@@ -1,0 +1,12 @@
+label main:
+    call read_int
+    comp_d
+    push
+    call read_int
+    assign_b_d
+    pop
+    decomp_a
+    mul
+    assign_d_a
+    call write_int
+    ret

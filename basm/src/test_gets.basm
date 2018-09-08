@@ -1,0 +1,44 @@
+const question 0
+const answer 2
+const name 4
+
+label main:
+    assign_dp_const $question
+    assign_mem_const 6
+    assign_dp_const 6
+    loadstr "Hello! What is your name? "
+    
+    assign_d_dp
+    assign_dp_const $answer
+    assign_mem_d
+    assign_dp_d
+    loadstr "Your name is "
+    
+    assign_d_dp
+    assign_dp_const $name
+    assign_mem_d
+    
+    assign_dp_const $question
+    assign_d_mem
+    assign_dp_d
+    call puts
+
+    assign_dp_const $name
+    assign_d_mem
+    assign_dp_d
+    call gets
+
+    assign_dp_const $answer
+    assign_d_mem
+    assign_dp_d
+    call puts
+    
+    assign_dp_const $name
+    assign_d_mem
+    assign_dp_d
+    call puts
+    
+    assign_a_const '\n'
+    comp_a
+    outb
+    ret

@@ -1,0 +1,46 @@
+label counter:
+    var !static_counter 2
+    assign_dp_const !static_counter
+    assign_a_mem
+    assign_b_const 1
+    add
+    assign_mem_a
+    ret
+
+label newline:
+    assign_a_const '\n'
+    comp_a
+    outb
+    ret
+
+label main:
+    var !str 2
+    assign_dp_const __allocated__
+    assign_a_dp
+    loadstr "Counter value: "
+    assign_dp_const !str
+    assign_mem_a
+
+label !while_loop1:
+    call counter
+    assign_b_const 10
+    sub
+    jz !done_loop1
+    add
+    comp_a
+    push
+
+    assign_dp_const !str
+    assign_a_mem
+    assign_dp_a
+    call puts
+    pop
+    decomp_d
+    call write_int
+    call newline
+    jmp !while_loop1
+
+label !done_loop1:
+    ret
+
+    

@@ -1,0 +1,5 @@
+label main:
+    loadstr "Hello world!\n"
+    assign_dp_const 0
+    call puts
+    ret

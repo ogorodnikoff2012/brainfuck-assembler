@@ -1,0 +1,56 @@
+label read_int:
+    assign_d_const 0
+    inb
+    decomp_c
+label !while_ws_1:
+    assign_a_c
+    assign_b_const ' '
+    sub
+    jp !end_ws_1 
+    inb
+    decomp_c
+    jmp !while_ws_1
+label !end_ws_1:
+    assign_a_c
+    assign_b_const '-'
+    sub
+    jz !if_lbl_1
+    jmp !else_lbl_1
+label !if_lbl_1:
+    assign_b_const -1
+    comp_b
+    push
+    inb
+    decomp_c
+    jmp !fi_lbl_1
+label !else_lbl_1:
+    assign_b_const 1
+    comp_b
+    push
+label !fi_lbl_1:
+label !while_lbl_2:
+    assign_a_c
+    assign_b_const '9'
+    sub
+    jp !end_lbl_2
+    assign_a_c
+    assign_b_const '0'
+    sub
+    jn !end_lbl_2
+    assign_c_a
+    assign_a_d
+    assign_b_const 10
+    mul
+    assign_b_c
+    add
+    assign_d_a
+    inb
+    decomp_c
+    jmp !while_lbl_2
+label !end_lbl_2:
+    pop
+    decomp_b
+    assign_a_d
+    mul
+    assign_d_a
+    ret

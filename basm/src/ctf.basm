@@ -1,0 +1,56 @@
+label init_str_table:
+  var !str_password 2
+  var !str_attempts_1 2
+  var !str_attempts_2 2
+  var !str_fail 2
+  var !str_ok 2
+  var !free_space 2
+
+  assign_d_const __allocated__
+
+  assign_dp_d
+  assign_a_dp
+  loadstr "'Take care of the sense and the sounds will take care of themselves.' Who is the author of this quote?"
+  assign_d_dp
+  assign_dp_const !str_password
+  assign_mem_a
+
+  assign_dp_d
+  assign_a_dp
+  loadstr "You have "
+  assign_d_dp
+  assign_dp_const !str_attempts_1
+  assign_mem_a
+
+  assign_dp_d
+  assign_a_dp
+  loadstr " attempts remaining.\n"
+  assign_d_dp
+  assign_dp_const !str_attempts_2
+  assign_mem_a
+
+  assign_dp_d
+  assign_a_dp
+  loadstr "You have no more attempts!\n"
+  assign_d_dp
+  assign_dp_const !str_fail
+  assign_mem_a
+
+  assign_dp_d
+  assign_a_dp
+  loadstr "Well done!\n"
+  assign_d_dp
+  assign_dp_const !str_ok
+  assign_mem_a
+
+  assign_dp_const !free_space
+  assign_mem_d
+  ret
+
+label main:
+  call init_str_table
+  assign_dp_const !str_password
+  assign_a_mem
+  assign_dp_a
+  call puts
+  ret

@@ -1,0 +1,28 @@
+label gets:
+    push
+    comp_a
+    push
+    comp_b
+    push
+label !while:
+    assign_b_const '\n'
+    inb
+    decomp_a
+    sub
+    jz !end
+label !no_zero:
+    add
+    assign_mem_a
+    assign_a_dp
+    assign_b_const 2
+    add
+    assign_dp_a
+    jmp !while
+label !end:
+    assign_mem_const 0
+    pop
+    decomp_b
+    pop
+    decomp_a
+    pop
+    ret

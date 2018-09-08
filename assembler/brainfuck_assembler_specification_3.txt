@@ -1,0 +1,163 @@
+VM specification:
+- four 16-bit data registers ("A", "B", "C", "D");
+- one 16-bit "compressed integer" (or "CI") register;
+- 16-byte buffer (for system use only; direct user access is not available);
+- three 64-Kbyte random access arrays ("code", "data" and "stack"). Each one has
+  its own 16-bit pointer register. Data pointer ("DP") can be accessed
+  directly from code.
+
+Program is loaded in the "code" array and then executed starting from
+the first byte.
+
+Instructions specification:
+
+Instruction number is equal to its bytecode representation, e.g. bytecode
+"02 01 03 00" is equivalent to program "inb nop outb halt"
+
+HALT - stop the VM;
+NOP - do nothing;
+INB - read the next character from stdin and put it in the CI register (every
+byte except the least significant one is set to zero);
+OUTB - write the least significant byte of the CI register to stdout;
+ASSIGN_A_B - A = B;
+ASSIGN_A_C
+ASSIGN_A_D
+ASSIGN_A_DP
+ASSIGN_A_CONST - put 2 bytes from "code" array which follows after this
+instruction into CI register and then unpack CI to A;
+ASSIGN_A_MEM - do the same thing, but use "data" array instead of "code";
+ASSIGN_B_A
+ASSIGN_B_C
+ASSIGN_B_D
+ASSIGN_B_DP
+ASSIGN_B_CONST
+ASSIGN_B_MEM
+ASSIGN_C_A
+ASSIGN_C_B
+ASSIGN_C_D
+ASSIGN_C_DP
+ASSIGN_C_CONST
+ASSIGN_C_MEM
+ASSIGN_DP_A - DP = A;
+ASSIGN_DP_B
+ASSIGN_DP_C
+ASSIGN_DP_D
+ASSIGN_DP_CONST
+ASSIGN_MEM_A - compress A into CI and put CI into "data" array
+ASSIGN_MEM_B
+ASSIGN_MEM_C
+ASSIGN_MEM_D
+ASSIGN_MEM_CONST - use CI
+ASSIGN_D_A
+ASSIGN_D_B
+ASSIGN_D_C
+ASSIGN_D_DP
+ASSIGN_D_MEM
+ASSIGN_D_CONST
+ADD - A += B;
+SUB - A -= B;
+MUL - A *= B;
+DIVMOD - A, C = A % B, A // B;
+CMP_UNSIGNED - use like comparators in Java: A = (A < B) ? (-1) : (A == B)
+: 0 : 1;
+CMP_SIGNED
+COMP_A - compress A into CI;
+COMP_B
+COMP_C
+COMP_D
+COMP_DP
+DECOMP_A
+DECOMP_B
+DECOMP_C
+DECOMP_D
+DECOMP_DP - decompress CI to DP;
+JZ - if A == 0 then jump to the <addr> which is copied from "code" array to CI;
+JN - if A < 0 then ...;
+JP - if A > 0 then ...;
+JMP - ...;
+JZ_MEM - do the same thing, but take <addr> from "data" array;
+JN_MEM
+JP_MEM
+JMP_MEM
+PUSH - increment stack pointer and copy CI to the top of the stack;
+POP - copy the top of the stack to CI and decrement stack pointer;
+SP_MOVE - assign_a_const and SP += A;
+CALL - push code pointer (CP) and jump to the <addr> (using CI);
+RET - pop CP and jump to current address (using CI);
+BOOL_NOT - A = is_zero(A);
+BOOL_AND - A = not is_zero(A) and not is_zero(B);
+BOOL_OR - A = not is_zero(A) or not is_zero(B);
+BOOL_XOR - A = is_zero(A) xor is_zero(B);
+DUMP - print hex representation of A, B, C and D.
+
+LOADSTR 'str' - load string <str> into "data" on address specified in DP; equivalent to code:
+    push
+    comp_a
+    push
+    comp_b
+    push
+    assign_b_const 2
+    for ch in str:
+        assign_mem_const ch
+        assign_a_dp
+        add
+        assign_dp_a
+    assign_mem_const 0
+    assign_a_dp
+    add
+    assign_dp_a
+    pop
+    decomp_b
+    pop
+    decomp_a
+    pop
+
+Source code example:
+const TEN 10 # all $TEN's in this file will be replaced with 10
+label main: # global label, available from all object files
+#     ~~~~^ - space between label's name and the colon is prohibited
+    call read_int # you are able to call global functions from other files
+    assign_a_d
+    assign_b_const 3
+    divmod
+    assign_d_a
+    call print_int
+    assign_a_const '\n'
+    comp_a
+    outb
+    ret
+
+label print_int:
+    assign_a_d
+    assign_b_const $TEN # it will be replaced with 'assign_b_const 10'
+    divmod
+
+    # swap A and C
+    comp_a
+    assign_a_c
+    decomp_c
+
+    jz !if_lbl_1 # local label (starts with '!'), available only in this file
+    jmp !else_lbl_1
+
+label !if_lbl_1:
+    assign_a_c
+    jmp !fi_lbl_1
+label !else_lbl_1:
+    comp_d
+    push
+    comp_c
+    push
+    assign_d_a
+    call print_int # recursion, aww yeah :)
+    pop
+    decomp_a
+    pop
+    decomp_d
+label !fi_lbl_1:
+
+    assign_b_const '0'
+    add
+    comp_a
+    outb
+    ret

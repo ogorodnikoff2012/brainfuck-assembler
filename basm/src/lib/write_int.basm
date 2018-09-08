@@ -1,0 +1,31 @@
+label write_int:
+    assign_a_d
+    assign_b_const 10
+    divmod
+    comp_a
+    assign_a_c
+    decomp_c
+
+    jz !if_lbl_1
+    jmp !else_lbl_1
+label !if_lbl_1:
+    assign_a_c
+    jmp !fi_lbl_1
+label !else_lbl_1:
+    comp_d
+    push
+    comp_c
+    push
+    assign_d_a
+    call write_int
+    pop
+    decomp_a
+    pop
+    decomp_d
+label !fi_lbl_1:
+    
+    assign_b_const '0'
+    add
+    comp_a
+    outb
+    ret

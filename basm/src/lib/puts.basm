@@ -1,0 +1,24 @@
+label puts:
+    push
+    comp_a
+    push
+    comp_b
+    push
+label !while:
+    assign_a_mem
+    jz !end
+label !no_zero:
+    comp_a
+    outb
+    assign_a_dp
+    assign_b_const 2
+    add
+    assign_dp_a
+    jmp !while
+label !end:
+    pop
+    decomp_b
+    pop
+    decomp_a
+    pop
+    ret
